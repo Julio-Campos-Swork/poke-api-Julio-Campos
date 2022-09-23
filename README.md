@@ -1,4 +1,4 @@
-# poke-prueba
+# pokemon-api-by-julio-campos
 
 ## Project setup
 ```
