@@ -22,17 +22,17 @@
           aria-controls="collapse-2"
         >
           <span class="circle-warning text-xl-left black--text">
-            {{ capturado.length }}
+            {{ capture.length }}
           </span>
         </v-img>
       </template>
       <div class="scrol">
-        <v-col v-for="(mostrar, index) in capturado" :key="index">
+        <v-col v-for="(mostrar, index) in capture" :key="index">
           <v-img fab max-width="100" max-height="100" :src="getUrl(mostrar.id)">
            <span> <v-icon
               color="#E53935"
               left
-              @click="liberar([mostrar.name, index])"
+              @click="getFreePokemonX([mostrar.name, index])"
             >
               highlight_off
             </v-icon></span>
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -52,15 +52,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(["capturado"]),
+    ...mapState(["capture"]),
   },
   methods: {
+    ...mapActions(["getFreePokemonX"]),
     getUrl(id) {
       let gif = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${id}.gif`;
       return gif;
-    },
-    liberar(name) {
-      this.$store.dispatch("getLiberarX", name);
     },
   },
 };

@@ -56,7 +56,7 @@ watch:{
   overlay (val) {
         val && setTimeout(() => {
           this.overlay = false
-        }, 9000)
+        }, 3000)
       },
 },
 components:{

@@ -22,52 +22,52 @@ export default new Vuex.Store({
     next: "",
     prev: "",
     status: 0,
-    cargando: false,
-    capturado: [],
+    loading: false,
+    capture: [],
   },
   getters: {},
   mutations: {
     setPokemones(state, payload) {
-      //definir un array temp para poder hacer el foreach
+      //definir un array newArrayPokemones para poder hacer el foreach
       //payload trae el array que viene del Axios
-      let temp = [];
+      let newArrayPokemones = [];
       payload.forEach((element) => {
-        temp.push({
+        newArrayPokemones.push({
           name: element.name,
           url: element.url,
           status: 0,
         });
       });
 
-      //temp2 representa el guardado de lo que tenemos en local storage haciendo recorrido del mismo por foreach
+      //newArrayCapture representa el guardado de lo que tenemos en local storage haciendo recorrido del mismo por foreach
       //integrando con "findIndex" para poder encontrar el index
       //si al hacer una nueva evaluacion en la siguiente pagina no encuentra index
       //saltara el proceso y estaremos asignando los valores a state para poder mostrarlos
-      let temp2 = JSON.parse(localStorage.getItem("Capturado"));
-      temp2.forEach((ele) => {
-        let index = temp.findIndex((ele2) => ele.name === ele2.name);
+      let newArrayCapture = JSON.parse(localStorage.getItem("capture"));
+      newArrayCapture.forEach((ele) => {
+        let index = newArrayPokemones.findIndex((ele2) => ele.name === ele2.name);
         if (index == -1) {
         } else {
-          temp[index].status = 1;
+          newArrayPokemones[index].status = 1;
         }
       });
-      state.pokemones = temp;
-      state.capturado = temp2;
+      state.pokemones = newArrayPokemones;
+      state.capture = newArrayCapture;
     },
 
-    liberar(state, payload) {
-      //utilizamos el filter para buscar lo que ya tenemos capturado y si lo tenemos para liberar se libera
+    freePokemon(state, payload) {
+      //utilizamos el filter para buscar lo que ya tenemos capture y si lo tenemos para freePokemon se libera
 
-      let temp = state.capturado.filter((el) => el.name !== payload[0]);
-      let temp2 = state.pokemones;
+      let tempArrayCapture = state.capture.filter((el) => el.name !== payload[0]);
+      let tempArrayPokemones = state.pokemones;
 
-      temp2[payload[1]].status = 0;
-      state.pokemones = temp2;
-      state.capturado = temp;
-      localStorage.setItem("Capturado", JSON.stringify(state.capturado));
+      tempArrayPokemones[payload[1]].status = 0;
+      state.pokemones = tempArrayPokemones;
+      state.capture = tempArrayCapture;
+      localStorage.setItem("capture", JSON.stringify(state.capture));
     },
 
-    liberarX(state, payload) {
+    freePokemonX(state, payload) {
       let freePokemon = state.pokemones; //creamos nueva variable para el metodo
       let index = freePokemon.findIndex((ele2) => payload[0] === ele2.name); //findindex de nuestros pokemones para poder asignar el status a 0
       if (index == -1) {
@@ -75,17 +75,17 @@ export default new Vuex.Store({
         freePokemon[index].status = 0;
       }//al volver 0 el valor de status reasignamos a pokemones
       state.pokemones = freePokemon;
-      let freeCapturado = state.capturado.filter(
+      let freecapture = state.capture.filter(
         (el) => el.name !== payload[0]
-      );//Hacemos filter para eliminar la concidencia de nombre del capturado y eliminarlo del local storage
-      state.capturado = freeCapturado;
-      localStorage.setItem("Capturado", JSON.stringify(state.capturado));
+      );//Hacemos filter para eliminar la concidencia de nombre del capture y eliminarlo del local storage
+      state.capture = freecapture;
+      localStorage.setItem("capture", JSON.stringify(state.capture));
     },
 
-    capturar(state, payload) {
-      //asignamos al espacio de memoria "Capturado" lo que llegue de nuestro payload (en este caso es un array)
-      //asignamos un status para demostrar que esta capturado y evaluarlo
-      let temp = JSON.parse(localStorage.getItem("Capturado"));
+    capturePokemon(state, payload) {
+      //asignamos al espacio de memoria "capture" lo que llegue de nuestro payload (en este caso es un array)
+      //asignamos un status para demostrar que esta capture y evaluarlo
+      let temp = JSON.parse(localStorage.getItem("capture"));
       let temp2 = state.pokemones;
       temp2[payload[1]].status = 1;
 
@@ -93,8 +93,8 @@ export default new Vuex.Store({
 
       temp.push({ name: payload[0], id: newUrl[6] });
 
-      localStorage.setItem("Capturado", JSON.stringify(temp));
-      state.capturado = temp;
+      localStorage.setItem("capture", JSON.stringify(temp));
+      state.capture = temp;
       state.pokemones = temp2;
     },
 
@@ -107,8 +107,8 @@ export default new Vuex.Store({
     setPrev(state, payload) {
       state.prev = payload;
     },
-    setCargando(state, payload) {
-      state.cargando = payload;
+    setloading(state, payload) {
+      state.loading = payload;
     },
   },
   actions: {
@@ -120,7 +120,6 @@ export default new Vuex.Store({
         const prev = resp.data.previous;
 
         commit("setPokemones", data);
-        commit("setCargando", false);
         commit("setPrev", prev);
         commit("setNext", next);
       } catch (error) {
@@ -148,15 +147,18 @@ export default new Vuex.Store({
         console.log(error);
       }
     },
-    getStorage({ commit }, payload) {
-      commit("capturar", payload);
+    getCapture({ commit }, payload) {
+      commit("capturePokemon", payload);
     },
 
-    getLiberar({ commit }, payload) {
-      commit("liberar", payload);
+    getFreePokemon({ commit }, payload) {
+      commit("freePokemon", payload);
     },
-    getLiberarX({ commit }, payload) {
-      commit("liberarX", payload);
+    getfreePokemonX({ commit }, payload) {
+      commit("freePokemonX", payload);
+    },
+    getLoading({commit}, payload){
+      commit("setloading", payload)
     },
   },
   modules: {},

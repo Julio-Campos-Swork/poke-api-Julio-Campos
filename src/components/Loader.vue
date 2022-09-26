@@ -1,14 +1,5 @@
 <template>
-  <div class="text-center">
-    <v-btn
-      :disabled="dialog"
-      :loading="dialog"
-      class="white--text"
-      color="purple darken-2"
-      @click="dialog = true"
-    >
-      Start loading
-    </v-btn>
+  <div class="mx-auto">
     <v-dialog
       v-model="dialog"
       hide-overlay
@@ -36,7 +27,7 @@
 export default {
     data () {
       return {
-        dialog: false,
+        dialog: true,
       }
     },
 
@@ -44,7 +35,7 @@ export default {
       dialog (val) {
         if (!val) return
 
-        setTimeout(() => (this.dialog = false), 4000)
+        setTimeout(() => (this.dialog = false), 3000)
       },
     },
 }

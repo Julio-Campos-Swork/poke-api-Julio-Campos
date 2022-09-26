@@ -6,7 +6,7 @@
     <div>
       <v-card elevation="0" tile class="mx-auto">
         <v-container>
-          <v-row v-if="cargando == true">
+          <v-row v-if="loading == true">
             <Loader />
           </v-row>
           <v-row justify="center" align="center" v-else>
@@ -49,7 +49,7 @@
                     <v-img
                       v-if="poke.status === 0"
                       src="../assets/Pokebola-abierta.png"
-                      @click="getStorage([poke.name, index, poke.url])"
+                      @click="getCapture([poke.name, index, poke.url])"
                       color="primary"
                       max-width="70"
                       max-height="70"
@@ -59,14 +59,14 @@
                     <v-img
                       v-else
                       src="../assets/Pokebola.png"
-                      @click="liberar([poke.name, index])"
+                      @click="getFreePokemon([poke.name, index])"
                       color="warning"
                       max-width="70"
                       max-height="70"
                     >
                     </v-img>
                     <v-img
-                      @click="verInfo(poke.url)"
+                      @click="watchInfo(poke.url)"
                       src="../assets/pokedesk.png"
                       max-width="70"
                       max-height="70"
@@ -80,6 +80,7 @@
         </v-container>
       </v-card>
     </div>
+
     <Pagination />
 
     <Footer />
@@ -99,8 +100,7 @@ export default {
   name: "Inicio",
   data() {
     return {
-      actual: 1,
-      temp: 1,
+      
     };
   },
   components: {
@@ -116,9 +116,9 @@ export default {
       this.$store.dispatch("getPokemones", this.baseUrl);
     }, 2000);
 
-    if (localStorage.getItem("Capturado")) {
+    if (localStorage.getItem("capture")) {
     } else {
-      localStorage.setItem("Capturado", JSON.stringify([]));
+      localStorage.setItem("capture", JSON.stringify([]));
     }
   },
 
@@ -130,60 +130,24 @@ export default {
       "baseUrl",
       "next",
       "prev",
-      "cargando",
-      "capturado",
+      "loading",
+      "capture",
     ]),
 
-    cambiarPag() {
-      if (this.temp == this.actual) {
-      } else {
-        let pagina = 20;
-        this.temp = this.actual;
-        pagina = pagina * this.actual;
-        this.$store.dispatch(
-          "getPokemones",
-          `https://pokeapi.co/api/v2/pokemon/?offset=${pagina}&limit=20`
-        );
-      }
-    },
+    
   },
   methods: {
-    ...mapActions(["getPokemon", "getPokemones", "getStorage"]),
+    ...mapActions(["getPokemon", "getPokemones", "getCapture","getFreePokemon"]),
 
     getImg(url) {
       let newUrl = url.split(["/"]);
-      let temp =
+      let urlImg =
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/";
 
-      return `${temp}${newUrl[6]}.png`;
+      return `${urlImg}${newUrl[6]}.png`;
     },
-    sPrev() {
-      setTimeout(() => {
-        if (this.prev !== null) {
-          this.$store.dispatch("getPokemones", this.prev);
-        } else {
-          console.log("Error");
-        }
-      }, 3000);
-    },
-    sNext() {
-      setTimeout(() => {
-        if (this.next !== null) {
-          this.$store.dispatch("getPokemones", this.next);
-        } else {
-          console.log("Error");
-        }
-      }, 1000);
-    },
-    captura(name) {
-      let temp = JSON.parse(localStorage.getItem("Capturado"));
-      temp.push(name);
-      localStorage.setItem("Capturado", JSON.stringify(temp));
-    },
-    liberar(name) {
-      this.$store.dispatch("getLiberar", name);
-    },
-    verInfo(index) {
+    
+    watchInfo(index) {
       this.$store.dispatch("getPokemon", index);
       setTimeout(() => {
         this.$refs.compdialog.abrirModal(index);
