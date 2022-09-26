@@ -1,6 +1,7 @@
 <template>
   <div v-if="index !== false">
-    <v-dialog v-model="dialog" scrollable  
+    <v-dialog class="mx-auto" 
+    v-model="dialog"  
        height="950"
         width="650"
         >
@@ -9,7 +10,7 @@
         light
         rounded="xl"
         color="#FFF8E1"
-        class="scrol"
+        class="mx-auto scrol"
         height="500"
         width="450"
         hover

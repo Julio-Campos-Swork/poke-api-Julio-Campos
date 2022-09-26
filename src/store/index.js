@@ -22,8 +22,8 @@ export default new Vuex.Store({
     next: "",
     prev: "",
     status: 0,
-    cargando: false,
-    capturado: [],
+    loading: false,
+    captured: [],
   },
   getters: {},
   mutations: {
@@ -43,7 +43,7 @@ export default new Vuex.Store({
       //integrando con "findIndex" para poder encontrar el index
       //si al hacer una nueva evaluacion en la siguiente pagina no encuentra index
       //saltara el proceso y estaremos asignando los valores a state para poder mostrarlos
-      let temp2 = JSON.parse(localStorage.getItem("Capturado"));
+      let temp2 = JSON.parse(localStorage.getItem("captured"));
       temp2.forEach((ele) => {
         let index = temp.findIndex((ele2) => ele.name === ele2.name);
         if (index == -1) {
@@ -52,22 +52,22 @@ export default new Vuex.Store({
         }
       });
       state.pokemones = temp;
-      state.capturado = temp2;
+      state.captured = temp2;
     },
 
-    liberar(state, payload) {
-      //utilizamos el filter para buscar lo que ya tenemos capturado y si lo tenemos para liberar se libera
+    setFreePokemon(state, payload) {
+      //utilizamos el filter para buscar lo que ya tenemos captured y si lo tenemos para liberar se libera
 
-      let temp = state.capturado.filter((el) => el.name !== payload[0]);
+      let temp = state.captured.filter((el) => el.name !== payload[0]);
       let temp2 = state.pokemones;
 
       temp2[payload[1]].status = 0;
       state.pokemones = temp2;
-      state.capturado = temp;
-      localStorage.setItem("Capturado", JSON.stringify(state.capturado));
+      state.captured = temp;
+      localStorage.setItem("captured", JSON.stringify(state.captured));
     },
 
-    liberarX(state, payload) {
+    setFreePokemonX(state, payload) {
       let freePokemon = state.pokemones; //creamos nueva variable para el metodo
       let index = freePokemon.findIndex((ele2) => payload[0] === ele2.name); //findindex de nuestros pokemones para poder asignar el status a 0
       if (index == -1) {
@@ -75,17 +75,17 @@ export default new Vuex.Store({
         freePokemon[index].status = 0;
       }//al volver 0 el valor de status reasignamos a pokemones
       state.pokemones = freePokemon;
-      let freeCapturado = state.capturado.filter(
+      let freecaptured = state.captured.filter(
         (el) => el.name !== payload[0]
-      );//Hacemos filter para eliminar la concidencia de nombre del capturado y eliminarlo del local storage
-      state.capturado = freeCapturado;
-      localStorage.setItem("Capturado", JSON.stringify(state.capturado));
+      );//Hacemos filter para eliminar la concidencia de nombre del captured y eliminarlo del local storage
+      state.captured = freecaptured;
+      localStorage.setItem("captured", JSON.stringify(state.captured));
     },
 
-    capturar(state, payload) {
-      //asignamos al espacio de memoria "Capturado" lo que llegue de nuestro payload (en este caso es un array)
-      //asignamos un status para demostrar que esta capturado y evaluarlo
-      let temp = JSON.parse(localStorage.getItem("Capturado"));
+    setCaptured(state, payload) {
+      //asignamos al espacio de memoria "captured" lo que llegue de nuestro payload (en este caso es un array)
+      //asignamos un status para demostrar que esta captured y evaluarlo
+      let temp = JSON.parse(localStorage.getItem("captured"));
       let temp2 = state.pokemones;
       temp2[payload[1]].status = 1;
 
@@ -93,8 +93,8 @@ export default new Vuex.Store({
 
       temp.push({ name: payload[0], id: newUrl[6] });
 
-      localStorage.setItem("Capturado", JSON.stringify(temp));
-      state.capturado = temp;
+      localStorage.setItem("captured", JSON.stringify(temp));
+      state.captured = temp;
       state.pokemones = temp2;
     },
 
@@ -107,8 +107,8 @@ export default new Vuex.Store({
     setPrev(state, payload) {
       state.prev = payload;
     },
-    setCargando(state, payload) {
-      state.cargando = payload;
+    setLoading(state, payload) {
+      state.loading = payload;
     },
   },
   actions: {
@@ -120,7 +120,6 @@ export default new Vuex.Store({
         const prev = resp.data.previous;
 
         commit("setPokemones", data);
-        commit("setCargando", false);
         commit("setPrev", prev);
         commit("setNext", next);
       } catch (error) {
@@ -148,16 +147,19 @@ export default new Vuex.Store({
         console.log(error);
       }
     },
-    getStorage({ commit }, payload) {
-      commit("capturar", payload);
+    getCaptured({ commit }, payload) {
+      commit("setCaptured", payload);
     },
 
-    getLiberar({ commit }, payload) {
-      commit("liberar", payload);
+    getFreePokemon({ commit }, payload) {
+      commit("setFreePokemon", payload);
     },
-    getLiberarX({ commit }, payload) {
-      commit("liberarX", payload);
+    getFreePokemonX({ commit }, payload) {
+      commit("setFreePokemonX", payload);
     },
+    getLoading({ commit }, payload){
+      commit ("setLoading", payload)
+    }
   },
   modules: {},
 });
